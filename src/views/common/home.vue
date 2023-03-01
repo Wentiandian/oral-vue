@@ -18,7 +18,7 @@
             <div style="padding: 14px;">
               <span class="text">{{item.text}}</span>
               <div class="bottom clearfix">
-                <el-button type="primary" class="button" round>{{item.button}}</el-button>
+                <el-button type="primary" class="button" round @click="enterPage(item)">{{item.button}}</el-button>
               </div>
             </div>
           </el-card>
@@ -84,6 +84,19 @@
             button: '人员信息'
           }
         ]
+      }
+    },
+    methods: {
+      enterPage (item) {
+        console.log(item)
+        switch (item.id) {
+          case 1 :this.$router.replace({ name: '挂号管理' }); break
+          case 2 :this.$router.replace({ name: '科室管理' }); break
+          case 3 :this.$router.replace({ name: '病历管理' }); break
+          case 4 :this.$router.replace({ name: '药品分类' }); break
+          case 5 :this.$router.replace({ name: '缴费订单' }); break
+          case 6 :this.$router.replace({ name: '患者管理' }); break
+        }
       }
     }
   }

@@ -10,18 +10,90 @@
           <icon-svg name="shouye" class="site-sidebar__menu-icon"></icon-svg>
           <span slot="title">首页</span>
         </el-menu-item>
-        <el-submenu index="demo">
+
+        <el-submenu index="ghyy">
           <template slot="title">
             <icon-svg name="shoucang" class="site-sidebar__menu-icon"></icon-svg>
             <span>挂号预约</span>
           </template>
-          <el-menu-item index="" @click="$router.push({ name: '挂号管理' })">
+          <el-menu-item index="gh" @click="$router.push({ name: '挂号管理' })">
             <icon-svg name="tubiao" class="site-sidebar__menu-icon"></icon-svg>
             <span slot="title">挂号管理</span>
           </el-menu-item>
-          <el-menu-item index="demo-ueditor" @click="$router.push({ name: '预约管理' })">
+          <el-menu-item index="yy" @click="$router.push({ name: '预约管理' })">
             <icon-svg name="editor" class="site-sidebar__menu-icon"></icon-svg>
             <span slot="title">预约管理</span>
+          </el-menu-item>
+        </el-submenu>
+
+        <el-submenu index="ksgl">
+          <template slot="title">
+            <img src="~@/assets/img/logo/logo8.png" style="width: 40px;height: 30px">
+            <span>科室管理</span>
+          </template>
+          <el-menu-item index="ksgl" @click="$router.push({ name: '科室管理' })">
+            <img src="~@/assets/img/logo/logo4.png" style="width: 30px;height: 20px">
+            <span slot="title">科室管理</span>
+          </el-menu-item>
+        </el-submenu>
+
+        <el-submenu index="dzbl">
+          <template slot="title">
+            <img src="~@/assets/img/logo/logo7.png" style="width: 30px;height: 20px">
+            <span>电子病历</span>
+          </template>
+          <el-menu-item index="blgl" @click="$router.push({ name: '病历管理' })">
+            <img src="~@/assets/img/logo/logo6.png" style="width: 30px;height: 20px">
+            <span slot="title">病历管理</span>
+          </el-menu-item>
+          <el-menu-item index="blwdgl" @click="$router.push({ name: '病历文档管理' })">
+            <img src="~@/assets/img/logo/logo2.png" style="width: 30px;height: 20px">
+            <span slot="title">病历文档管理</span>
+          </el-menu-item>
+        </el-submenu>
+
+        <el-submenu index="ywgl">
+          <template slot="title">
+            <img src="~@/assets/img/logo/logo17.png" style="width: 30px;height: 20px">
+            <span>药物管理</span>
+          </template>
+          <el-menu-item index="ypfl" @click="$router.push({ name: '药品分类' })">
+            <img src="~@/assets/img/logo/logo16.png" style="width: 30px;height: 20px">
+            <span slot="title">药品分类</span>
+          </el-menu-item>
+          <el-menu-item index="ypcrk" @click="$router.push({ name: '药品出入库' })">
+            <img src="~@/assets/img/logo/logo15.png" style="width: 30px;height: 20px">
+            <span slot="title">药品出入库</span>
+          </el-menu-item>
+          <el-menu-item index="ywd" @click="$router.push({ name: '药物单' })">
+            <img src="~@/assets/img/logo/logo9.png" style="width: 30px;height: 20px">
+            <span slot="title">药物单</span>
+          </el-menu-item>
+        </el-submenu>
+
+        <el-submenu index="jfgl">
+          <template slot="title">
+            <img src="~@/assets/img/logo/logo1.png" style="width: 30px;height: 25px">
+            <span>缴费管理</span>
+          </template>
+          <el-menu-item index="jfdd" @click="$router.push({ name: '缴费订单' })">
+            <img src="~@/assets/img/logo/logo3.png" style="width: 30px;height: 20px">
+            <span slot="title">缴费订单</span>
+          </el-menu-item>
+        </el-submenu>
+
+        <el-submenu index="rygl">
+          <template slot="title">
+            <img src="~@/assets/img/logo/logo13.png" style="width: 30px;height: 25px">
+            <span>人员管理</span>
+          </template>
+          <el-menu-item index="hzgl" @click="$router.push({ name: '患者管理' })">
+            <img src="~@/assets/img/logo/logo11.png" style="width: 30px;height: 20px">
+            <span slot="title">患者管理</span>
+          </el-menu-item>
+          <el-menu-item index="yhgl" @click="$router.push({ name: '医护管理' })">
+            <img src="~@/assets/img/logo/logo14.png" style="width: 30px;height: 20px">
+            <span slot="title">医护管理</span>
           </el-menu-item>
         </el-submenu>
         <sub-menu

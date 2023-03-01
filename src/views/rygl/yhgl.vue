@@ -69,10 +69,8 @@
 </template>
 
 <script>
-import AddOrUpdate from './gh-temp'
 export default {
   components: {
-    AddOrUpdate
   },
   data () {
     return {
