@@ -4,6 +4,15 @@
       <el-form-item>
         <el-input v-model="dataForm.patientName" placeholder="患者名" clearable @change="getDataList"></el-input>
       </el-form-item>
+
+      <el-form-item>
+        <el-input v-model="dataForm.deptName" placeholder="科室名称" clearable @change="getDataList"></el-input>
+      </el-form-item>
+
+      <el-form-item>
+        <el-input v-model="dataForm.name" placeholder="医生名称" clearable @change="getDataList"></el-input>
+      </el-form-item>
+
       <el-select v-model="dataForm.status" placeholder="是否过期">
         <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" @change="getDataList">
         </el-option>
@@ -30,29 +39,29 @@
       @selection-change="selectionChangeHandle"
       style="width: 100%;">
       <el-table-column type="selection" header-align="center" align="center" width="50"></el-table-column>
-      <el-table-column prop="ghId" header-align="center" align="center" width="80" label="预约ID"/>
-      <el-table-column prop="patientEntity.patientName" header-align="center" align="center" label="患者名"/>
-      <el-table-column prop="patientEntity.patientName" header-align="center" align="center" label="预约科室"/>
-      <el-table-column prop="patientEntity.patientName" header-align="center" align="center" label="预约医生"/>
-      <el-table-column prop="patientEntity.sex" header-align="center" align="center" width="50" label="性别">
+      <el-table-column prop="bookingId" header-align="center" align="center" width="80" label="预约ID"/>
+      <el-table-column prop="patientName" header-align="center" align="center" label="患者名"/>
+      <el-table-column prop="deptName" header-align="center" align="center" label="预约科室"/>
+      <el-table-column prop="name" header-align="center" align="center" label="预约医生"/>
+      <el-table-column prop="sex" header-align="center" align="center" width="50" label="性别">
         <template slot-scope="scope">
-          <span style="margin-right: 10px;">{{ scope.row.patientEntity.sex == '0' ? '女' : '男' }}</span>
+          <span style="margin-right: 10px;">{{ scope.row.sex === '0' ? '女' : '男' }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="patientEntity.age" header-align="center" align="center" label="年龄"/>
-      <el-table-column prop="patientEntity.mobile" header-align="center" align="center" label="手机号"/>
-      <el-table-column prop="ghTime" header-align="center" align="center" width="180" label="预约时间"/>
+      <el-table-column prop="age" header-align="center" align="center" label="年龄"/>
+      <el-table-column prop="mobile" header-align="center" align="center" label="手机号"/>
+      <el-table-column prop="bookingTime" header-align="center" align="center" width="180" label="预约时间"/>
       <el-table-column prop="status" header-align="center" align="center" label="状态">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.status === 0" size="small" type="danger">已就诊</el-tag>
           <el-tag v-if="scope.row.status === 2" size="small" type="info">已过期</el-tag>
-          <el-tag v-if="scope.row.status === 1" size="small">有效</el-tag>
+          <el-tag v-if="scope.row.status === 1" size="small">未就诊</el-tag>
         </template>
       </el-table-column>
       <el-table-column fixed="right" header-align="center" align="center" width="150" label="操作">
         <template slot-scope="scope">
-          <el-button v-if="scope.row.status !== 0 && scope.row.status !== 2" type="text" size="small" @click="updateHandle(scope.row.ghId)">已就诊</el-button>
-          <el-button type="text" size="small" @click="deleteHandle(scope.row.ghId)">删除</el-button>
+          <el-button v-if="scope.row.status !== 0 && scope.row.status !== 2" type="text" size="small" @click="updateHandle(scope.row.bookingId)">已就诊</el-button>
+          <el-button type="text" size="small" @click="deleteHandle(scope.row.bookingId)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -77,12 +86,14 @@ export default {
     return {
       dataForm: {
         patientName: '',
+        deptName: '',
+        name: '',
         selectDate: [],
         starDate: '',
         endDate: '',
         status: ''
       },
-      options: [{value: '1', label: '有效'}, {value: '0', label: '已就诊'}, {value: '2', label: '已过期'}, {value: '', label: '全部状态'}],
+      options: [{value: '1', label: '未就诊'}, {value: '0', label: '已就诊'}, {value: '2', label: '已过期'}, {value: '', label: '全部状态'}],
       dataList: [],
       pageIndex: 1,
       pageSize: 10,
@@ -103,20 +114,22 @@ export default {
     getDataList () {
       this.dataListLoading = true
       this.$http({
-        url: this.$http.adornUrl('/sys/gh/list'),
+        url: this.$http.adornUrl('/sys/yy/list'),
         method: 'get',
         params: this.$http.adornParams({
           'page': this.pageIndex,
           'limit': this.pageSize,
           'patientName': this.dataForm.patientName,
+          'deptName': this.dataForm.deptName,
+          'name': this.dataForm.name,
           'starDate': this.dataForm.starDate,
           'endDate': this.dataForm.endDate,
           'status': this.dataForm.status
         })
       }).then(({data}) => {
         if (data && data.code === 0) {
-          this.dataList = data.list.records
-          this.totalPage = data.list.pages
+          this.dataList = data.list
+          this.totalPage = data.list.length / this.pageSize
         } else {
           this.dataList = []
           this.totalPage = 0
@@ -156,15 +169,14 @@ export default {
       })
     },
     // 修改
-    updateHandle (ghId) {
+    updateHandle (bookingId) {
       this.$confirm(`确定该用户已就诊?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        console.log(ghId)
         this.$http({
-          url: this.$http.adornUrl('/sys/gh/status/' + ghId),
+          url: this.$http.adornUrl('/sys/yy/status/' + bookingId),
           method: 'get',
           data: this.$http.adornParams()
         }).then(({data}) => {
@@ -186,18 +198,18 @@ export default {
     },
     // 删除
     deleteHandle (id) {
-      var ghIds = id ? [id] : this.dataListSelections.map(item => {
-        return item.ghId
+      var bookingIds = id ? [id] : this.dataListSelections.map(item => {
+        return item.bookingId
       })
-      this.$confirm(`确定对该挂号信息进行[${id ? '删除' : '批量删除'}]操作?`, '提示', {
+      this.$confirm(`确定对该预约信息进行[${id ? '删除' : '批量删除'}]操作?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
         this.$http({
-          url: this.$http.adornUrl('/sys/gh/delete'),
+          url: this.$http.adornUrl('/sys/yy/delete'),
           method: 'post',
-          data: this.$http.adornData(ghIds, false)
+          data: this.$http.adornData(bookingIds, false)
         }).then(({data}) => {
           if (data && data.code === 0) {
             this.$message({
