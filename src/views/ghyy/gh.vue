@@ -4,7 +4,7 @@
       <el-form-item>
         <el-input v-model="dataForm.patientName" placeholder="患者名" clearable @change="getDataList"></el-input>
       </el-form-item>
-      <el-select v-model="dataForm.status" placeholder="是否过期">
+      <el-select v-model="dataForm.status" placeholder="是否过期" clearable @change="getDataList">
         <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" @change="getDataList">
         </el-option>
       </el-select>
@@ -34,7 +34,7 @@
       <el-table-column prop="patientEntity.patientName" header-align="center" align="center" label="患者名"/>
       <el-table-column prop="patientEntity.sex" header-align="center" align="center" label="性别">
         <template slot-scope="scope">
-          <span style="margin-right: 10px;">{{ scope.row.patientEntity.sex == '0' ? '女' : '男' }}</span>
+          <span style="margin-right: 10px;">{{ scope.row.patientEntity.sex === '0' ? '女' : '男' }}</span>
         </template>
       </el-table-column>
       <el-table-column prop="patientEntity.age" header-align="center" align="center" label="年龄"/>
@@ -83,7 +83,7 @@ export default {
         endDate: '',
         status: ''
       },
-      options: [{value: '1', label: '未就诊'}, {value: '0', label: '已就诊'}, {value: '2', label: '已过期'}, {value: '', label: '全部状态'}],
+      options: [{value: '1', label: '未就诊'}, {value: '0', label: '已就诊'}, {value: '2', label: '已过期'}],
       dataList: [],
       pageIndex: 1,
       pageSize: 10,

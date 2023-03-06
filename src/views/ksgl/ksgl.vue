@@ -2,16 +2,16 @@
   <div class="mod-user">
     <el-form :inline="true" :model="dataForm" @keyup.enter.native="getDataList()">
       <el-form-item>
-        <el-input v-model="dataForm.deptId" placeholder="科室ID" clearable @change="getDataList"></el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-input v-model="dataForm.deptName" placeholder="科室名称" clearable @change="getDataList"></el-input>
+        <el-input v-model="dataForm.deptId" placeholder="科室编号" clearable @change="getDataList"></el-input>
       </el-form-item>
       <el-form-item>
         <el-input v-model="dataForm.director" placeholder="科室主任" clearable @change="getDataList"></el-input>
       </el-form-item>
-      <el-select v-model="dataForm.status">
-        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" @change="getDataList">
+      <el-form-item>
+        <el-input v-model="dataForm.deptName" placeholder="科室名称" clearable @change="getDataList"></el-input>
+      </el-form-item>
+      <el-select v-model="dataForm.status" placeholder="是否启用" clearable @change="getDataList">
+        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"clearable @change="getDataList">
         </el-option>
       </el-select>
       <el-form-item>
@@ -37,7 +37,7 @@
       @selection-change="selectionChangeHandle"
       style="width: 100%;">
       <el-table-column type="selection" header-align="center" align="center" width="50"></el-table-column>
-      <el-table-column prop="deptId" header-align="center" align="center" width="80" label="科室ID"/>
+      <el-table-column prop="deptId" header-align="center" align="center" width="80" label="科室编号"/>
       <el-table-column prop="deptName" header-align="center" align="center" label="科室名称"/>
       <el-table-column prop="director" header-align="center" align="center" label="科室主任"/>
       <el-table-column prop="deptRoom" header-align="center" align="center" label="科室房间"/>
@@ -88,7 +88,7 @@ export default {
         starDate: '',
         endDate: ''
       },
-      options: [{value: '1', label: '已启用'}, {value: '0', label: '已禁用'}, {value: '', label: '全部状态'}],
+      options: [{value: '1', label: '已启用'}, {value: '0', label: '已禁用'}],
       dataList: [],
       pageIndex: 1,
       pageSize: 10,

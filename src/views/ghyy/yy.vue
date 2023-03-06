@@ -13,7 +13,7 @@
         <el-input v-model="dataForm.name" placeholder="医生名称" clearable @change="getDataList"></el-input>
       </el-form-item>
 
-      <el-select v-model="dataForm.status" placeholder="是否过期">
+      <el-select v-model="dataForm.status" placeholder="是否过期" clearable @change="getDataList">
         <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" @change="getDataList">
         </el-option>
       </el-select>
@@ -93,7 +93,7 @@ export default {
         endDate: '',
         status: ''
       },
-      options: [{value: '1', label: '未就诊'}, {value: '0', label: '已就诊'}, {value: '2', label: '已过期'}, {value: '', label: '全部状态'}],
+      options: [{value: '1', label: '未就诊'}, {value: '0', label: '已就诊'}, {value: '2', label: '已过期'}],
       dataList: [],
       pageIndex: 1,
       pageSize: 10,
