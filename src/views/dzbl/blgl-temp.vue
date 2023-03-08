@@ -8,9 +8,6 @@
       <form-create v-model="fApi" :rule="rule" :option="options" :value.sync="value" />
       <el-row :gutter="24">
         <el-col :span="19">
-          <div v-for="item in this.fileNameList">
-            <img style="width: auto; height: 40px; border:none;cursor: pointer;" :src="getImage(item)" alt=""/>
-          </div>
           <div><p>上传图片：</p>
             <Upload ref="Upload"></Upload>
           </div></el-col>
@@ -39,7 +36,6 @@ export default {
       value: {},
       initValue: {},
       deptList: [],
-      fileNameList: [],
       titleName: '',
       flag: true,
       rule: [
@@ -243,6 +239,7 @@ export default {
       this.initValue = {}
       this.deptList = []
       this.dialogVisible = false
+      this.$refs.Upload.onCloseAndSubmit()
       this.fApi.resetFields()
       this.$emit('closeHide', false)
       this.$message({ message: '取消编辑' })
@@ -264,6 +261,7 @@ export default {
           this.initValue = null
           this.deptList = []
           this.dialogVisible = false
+          this.$refs.Upload.onCloseAndSubmit()
           this.fApi.resetFields()
           this.$emit('closeHide')
           this.$message({
@@ -278,23 +276,20 @@ export default {
     },
     upload () {
       let fileList = this.$refs.Upload.returnFileList()
-      console.log(222)
-      console.log(fileList)
-      for (let i = 0; i < fileList.length; i++) {
-        fileList[i]['fileName'] = fileList[i]['response']['fileName']
+      if (fileList !== undefined) {
+        for (let i = 0; i < fileList.length; i++) {
+          fileList[i]['status'] = 1
+          if (!fileList[i].response) {
+            continue
+          } else {
+            fileList[i]['fileName'] = fileList[i]['response']['fileName']
+          }
+        }
+        this.value['file'] = fileList
       }
-      this.value['file'] = fileList
     },
     downloadFile () {
-      for (let i = 0; i < this.fileList.length; i++) {
-        this.fileNameList.push(this.fileList[i]['fileName'])
-      }
-      console.log(11111111)
-      console.log(this.fileNameList)
-      this.$refs.Upload.fileView(this.fileNameList)
-    },
-    getImage (filename) {
-      return `http://localhost:8080/sys/common/download?name=${filename}`
+      this.$refs.Upload.fileView(this.fileList)
     }
   }
 }

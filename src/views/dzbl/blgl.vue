@@ -39,7 +39,7 @@
       style="width: 100%;">
       <el-table-column type="selection" header-align="center" align="center" width="50"></el-table-column>
       <el-table-column prop="eleRecordsId" header-align="center" align="center" label="病历编号"/>
-      <el-table-column prop="drugId" header-align="center" align="center" label="药物单编号"/>
+      <el-table-column prop="drugId" header-align="center" align="center" label="药物单(处方)编号"/>
       <el-table-column prop="patientName" header-align="center" align="center" label="患者名"/>
       <el-table-column prop="deptName" header-align="center" align="center" label="治疗科室"/>
       <el-table-column prop="treatmentNum" header-align="center" align="center" label="第几次就诊">

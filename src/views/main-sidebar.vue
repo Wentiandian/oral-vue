@@ -67,7 +67,7 @@
           </el-menu-item>
           <el-menu-item index="ywd" @click="$router.push({ name: '药物单' })">
             <img src="~@/assets/img/logo/logo9.png" style="width: 30px;height: 20px">
-            <span slot="title">药物单</span>
+            <span slot="title">药物单(处方)</span>
           </el-menu-item>
         </el-submenu>
 
