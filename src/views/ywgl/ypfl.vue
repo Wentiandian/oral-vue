@@ -2,10 +2,13 @@
   <div class="mod-user">
     <el-form :inline="true" :model="dataForm" @keyup.enter.native="getDataList()">
       <el-form-item>
-        <el-input v-model="dataForm.patientName" placeholder="患者名" clearable @change="getDataList"></el-input>
+        <el-input v-model="dataForm.drugId" placeholder="药品编号" clearable @change="getDataList"></el-input>
       </el-form-item>
-      <el-select v-model="dataForm.status" placeholder="是否过期">
-        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" @change="getDataList">
+      <el-form-item>
+        <el-input v-model="dataForm.drugName" placeholder="药品名称" clearable @change="getDataList"></el-input>
+      </el-form-item>
+      <el-select v-model="dataForm.drugDosageForm" placeholder="药品剂型" clearable @change="getDataList">
+        <el-option v-for="item in drugDosageList" :key="item.value" :label="item.label" :value="item.value" @change="getDataList">
         </el-option>
       </el-select>
       <el-form-item>
@@ -20,6 +23,7 @@
       </el-form-item>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
+        <el-button type="primary" @click="add()">新增药品</el-button>
         <el-button type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
       </el-form-item>
     </el-form>
@@ -30,27 +34,27 @@
       @selection-change="selectionChangeHandle"
       style="width: 100%;">
       <el-table-column type="selection" header-align="center" align="center" width="50"></el-table-column>
-      <el-table-column prop="ghId" header-align="center" align="center" width="80" label="挂号ID"/>
-      <el-table-column prop="patientEntity.patientName" header-align="center" align="center" label="患者名"/>
-      <el-table-column prop="patientEntity.sex" header-align="center" align="center" label="性别">
-        <template slot-scope="scope">
-          <span style="margin-right: 10px;">{{ scope.row.patientEntity.sex == '0' ? '女' : '男' }}</span>
+      <el-table-column prop="drugId" header-align="center" align="center" width="80" label="药品编号"/>
+      <el-table-column prop="drugName" header-align="center" align="center" label="药品名称"/>
+      <el-table-column prop="imageName" label="药品图片" align="center">
+        <template slot-scope="{ row }">
+          <div slot="error" class="image-slot" v-if="row.imageName !== null">
+            <img :src="getImage(row.imageName)" style="width: auto; height: 55px; border:none;" >
+          </div>
+          <div slot="error" class="image-slot" v-else>
+            <img src="../../assets/img/logo/logo16.png" style="width: auto; height: 55px; border:none;" >
+          </div>
         </template>
       </el-table-column>
-      <el-table-column prop="patientEntity.age" header-align="center" align="center" label="年龄"/>
-      <el-table-column prop="patientEntity.mobile" header-align="center" align="center" label="手机号"/>
-      <el-table-column prop="ghTime" header-align="center" align="center" width="180" label="挂号时间"/>
-      <el-table-column prop="status" header-align="center" align="center" label="状态">
-        <template slot-scope="scope">
-          <el-tag v-if="scope.row.status === 0" size="small" type="danger">已就诊</el-tag>
-          <el-tag v-if="scope.row.status === 2" size="small" type="info">已过期</el-tag>
-          <el-tag v-if="scope.row.status === 1" size="small">未就诊</el-tag>
-        </template>
-      </el-table-column>
+      <el-table-column prop="drugDosageForm" header-align="center" align="center" label="药品剂型"/>
+      <el-table-column prop="drugSize" header-align="center" align="center" label="药品规格"/>
+      <el-table-column prop="price" header-align="center" align="center" label="单价"/>
+      <el-table-column prop="inventory" header-align="center" align="center" label="库存量"/>
+      <el-table-column prop="createTime" header-align="center" align="center" width="180" label="创建时间"/>
       <el-table-column fixed="right" header-align="center" align="center" width="150" label="操作">
         <template slot-scope="scope">
-          <el-button v-if="scope.row.status !== 0 && scope.row.status !== 2" type="text" size="small" @click="updateHandle(scope.row.ghId)">已就诊</el-button>
-          <el-button type="text" size="small" @click="deleteHandle(scope.row.ghId)">删除</el-button>
+          <el-button type="text" size="small" @click="edit(scope.row.drugId)">修改</el-button>
+          <el-button type="text" size="small" @click="deleteHandle(scope.row.drugId)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -64,24 +68,27 @@
       layout="total, sizes, prev, pager, next, jumper">
     </el-pagination>
     <!-- 弹窗, 新增 / 修改 -->
-    <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
+    <infoTemp ref="infoTemp" @closeHide="getDataList"></infoTemp>
   </div>
 </template>
 
 <script>
+import infoTemp from './ypfl-temp'
 export default {
   components: {
+    infoTemp
   },
   data () {
     return {
       dataForm: {
-        patientName: '',
+        drugId: '',
+        drugName: '',
+        drugDosageForm: '',
         selectDate: [],
         starDate: '',
-        endDate: '',
-        status: ''
+        endDate: ''
       },
-      options: [{value: '1', label: '未就诊'}, {value: '0', label: '已就诊'}, {value: '2', label: '已过期'}, {value: '', label: '全部状态'}],
+      drugDosageList: [],
       dataList: [],
       pageIndex: 1,
       pageSize: 10,
@@ -93,21 +100,23 @@ export default {
   },
   created () {
     this.getDataList()
+    this.getDrugDosageList()
   },
   methods: {
     // 获取数据列表
     getDataList () {
       this.dataListLoading = true
       this.$http({
-        url: this.$http.adornUrl('/sys/gh/list'),
+        url: this.$http.adornUrl('/sys/ypfl/list'),
         method: 'get',
         params: this.$http.adornParams({
           'page': this.pageIndex,
           'limit': this.pageSize,
-          'patientName': this.dataForm.patientName,
+          'drugId': this.dataForm.drugId,
+          'drugName': this.dataForm.drugName,
+          'drugDosageForm': this.dataForm.drugDosageForm,
           'starDate': this.dataForm.starDate,
-          'endDate': this.dataForm.endDate,
-          'status': this.dataForm.status
+          'endDate': this.dataForm.endDate
         })
       }).then(({data}) => {
         if (data && data.code === 0) {
@@ -119,6 +128,29 @@ export default {
         }
         this.dataListLoading = false
       })
+    },
+    getDrugDosageList () {
+      this.$http({
+        url: this.$http.adornUrl('/sys/common/drugDosageList'),
+        method: 'get',
+        params: this.$http.adornParams()
+      }).then(({data}) => {
+        if (data && data.code === 0) {
+          let drugDosageMap = {}
+          for (let i = 0; i < data.list.length; i++) {
+            drugDosageMap = {
+              'label': data.list[i].drugDosageForm,
+              'value': data.list[i].drugDosageForm
+            }
+            this.drugDosageList.push(drugDosageMap)
+          }
+        } else {
+          this.$message({ message: data.msg })
+        }
+      })
+    },
+    getImage (imageName) {
+      return `http://localhost:8080/sys/common/download?name=${imageName}`
     },
     dateSelect () {
       if (this.dataForm.selectDate === null) {
@@ -145,55 +177,28 @@ export default {
       this.dataListSelections = val
     },
     // 新增
-    addOrUpdateHandle (patientId, patientName) {
-      this.addOrUpdateVisible = true
-      this.$nextTick(() => {
-        this.$refs.addOrUpdate.init(patientId, patientName)
-      })
+    add () {
+      // 使用目标页面的方法
+      this.$refs.infoTemp.open(true, '')
     },
-    // 修改
-    updateHandle (ghId) {
-      this.$confirm(`确定该用户已就诊?`, '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        console.log(ghId)
-        this.$http({
-          url: this.$http.adornUrl('/sys/gh/status/' + ghId),
-          method: 'get',
-          data: this.$http.adornParams()
-        }).then(({data}) => {
-          if (data && data.code === 0) {
-            this.$message({
-              message: '操作成功',
-              type: 'success',
-              duration: 1500,
-              onClose: () => {
-                this.getDataList()
-              }
-            })
-          } else {
-            this.$message.error(data.msg)
-          }
-        })
-      }).catch(() => {})
-      this.getDataList()
+    // 编辑
+    edit (id) {
+      this.$refs.infoTemp.open(false, id)
     },
     // 删除
     deleteHandle (id) {
-      var ghIds = id ? [id] : this.dataListSelections.map(item => {
-        return item.ghId
+      var drugIds = id ? [id] : this.dataListSelections.map(item => {
+        return item.drugId
       })
-      this.$confirm(`确定对该挂号信息进行[${id ? '删除' : '批量删除'}]操作?`, '提示', {
+      this.$confirm(`确定对该科室信息进行[${id ? '删除' : '批量删除'}]操作?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
         this.$http({
-          url: this.$http.adornUrl('/sys/gh/delete'),
+          url: this.$http.adornUrl('/sys/ypfl/delete'),
           method: 'post',
-          data: this.$http.adornData(ghIds, false)
+          data: this.$http.adornData(drugIds, false)
         }).then(({data}) => {
           if (data && data.code === 0) {
             this.$message({
