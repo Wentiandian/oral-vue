@@ -109,11 +109,33 @@ export default {
           }
         },
         {
-          type: 'datePicker',
-          field: 'createTime',
-          title: '创建时间',
-          props: {
-            disabled: true
+          type: 'input',
+          field: 'usageDosage',
+          title: '用法用量',
+          effect: {
+            required: '请填写用法用量'
+          },
+          col: {
+            span: 8
+          }
+        },
+        {
+          type: 'input',
+          field: 'address',
+          title: '存放地址',
+          effect: {
+            required: '请填写存放地址'
+          },
+          col: {
+            span: 8
+          }
+        },
+        {
+          type: 'input',
+          field: 'lifeTime',
+          title: '保质期',
+          effect: {
+            required: '请填写保质期'
           },
           col: {
             span: 8

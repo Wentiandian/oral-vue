@@ -61,9 +61,13 @@
             <img src="~@/assets/img/logo/logo16.png" style="width: 30px;height: 20px">
             <span slot="title">药品分类</span>
           </el-menu-item>
-          <el-menu-item index="ypcrk" @click="$router.push({ name: '药品出入库' })">
+          <el-menu-item index="yprk" @click="$router.push({ name: '药品入库' })">
+            <img src="~@/assets/img/logo/logo12.png" style="width: 30px;height: 20px">
+            <span slot="title">药品入库</span>
+          </el-menu-item>
+          <el-menu-item index="ypck" @click="$router.push({ name: '药品出库' })">
             <img src="~@/assets/img/logo/logo15.png" style="width: 30px;height: 20px">
-            <span slot="title">药品出入库</span>
+            <span slot="title">药品出库</span>
           </el-menu-item>
           <el-menu-item index="ywd" @click="$router.push({ name: '药物单' })">
             <img src="~@/assets/img/logo/logo9.png" style="width: 30px;height: 20px">
