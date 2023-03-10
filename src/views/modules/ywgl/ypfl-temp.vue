@@ -121,6 +121,17 @@ export default {
         },
         {
           type: 'input',
+          field: 'vendor',
+          title: '供应商',
+          effect: {
+            required: '请填写供应商'
+          },
+          col: {
+            span: 12
+          }
+        },
+        {
+          type: 'input',
           field: 'address',
           title: '存放地址',
           effect: {

@@ -34,19 +34,7 @@ const mainRoutes = {
     // 2. iframeUrl: 是否通过iframe嵌套展示内容, '以http[s]://开头': 是, '': 否
     // 提示: 如需要通过iframe嵌套展示内容, 但不通过tab打开, 请自行创建组件使用iframe处理!
     { path: '/home', component: _import('common/home'), name: 'home', meta: { title: '首页' } },
-    { path: '/theme', component: _import('common/theme'), name: 'theme', meta: { title: '主题' } },
-    { path: '/ghyy/gh', component: _import('ghyy/gh'), name: '挂号管理', meta: { title: '挂号管理', isTab: true } },
-    { path: '/ghyy/yy', component: _import('ghyy/yy'), name: '预约管理', meta: { title: '预约管理', isTab: true } },
-    { path: '/ksgl', component: _import('ksgl/ksgl'), name: '科室管理', meta: { title: '科室管理', isTab: true } },
-    { path: '/dzbl/blgl', component: _import('dzbl/blgl'), name: '病历管理', meta: { title: '病历管理', isTab: true } },
-    { path: '/dzbl/blwdgl', component: _import('dzbl/blwdgl'), name: '病历文档管理', meta: { title: '病历文档管理', isTab: true } },
-    { path: '/ywgl/ypfl', component: _import('ywgl/ypfl'), name: '药品分类', meta: { title: '药品分类', isTab: true } },
-    { path: '/ywgl/yprk', component: _import('ywgl/yprk'), name: '药品入库', meta: { title: '药品入库', isTab: true } },
-    { path: '/ywgl/ypck', component: _import('ywgl/ypck'), name: '药品出库', meta: { title: '药品出库', isTab: true } },
-    { path: '/ywgl/ywd', component: _import('ywgl/ywd'), name: '药物单', meta: { title: '药物单', isTab: true } },
-    { path: '/jfgl/jfdd', component: _import('jfgl/jfdd'), name: '缴费订单', meta: { title: '缴费订单', isTab: true } },
-    { path: '/rygl/hzgl', component: _import('rygl/hzgl'), name: '患者管理', meta: { title: '患者管理', isTab: true } },
-    { path: '/rygl/yhgl', component: _import('rygl/yhgl'), name: '医护管理', meta: { title: '医护管理', isTab: true } }
+    { path: '/theme', component: _import('common/theme'), name: 'theme', meta: { title: '主题' } }
   ],
   beforeEnter (to, from, next) {
     let token = Vue.cookie.get('token')

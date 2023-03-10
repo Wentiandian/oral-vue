@@ -4,9 +4,10 @@
       <el-form-item>
         <el-input v-model="dataForm.drugId" placeholder="药品编号" clearable @change="getDataList"></el-input>
       </el-form-item>
-      <el-form-item>
-        <el-input v-model="dataForm.drugName" placeholder="药品名称" clearable @change="getDataList"></el-input>
-      </el-form-item>
+      <el-select v-model="dataForm.drugName" placeholder="药品名称" clearable @change="getDataList">
+        <el-option v-for="item in drugNameList" :key="item.value" :label="item.label" :value="item.value" @change="getDataList">
+        </el-option>
+      </el-select>
       <el-select v-model="dataForm.drugDosageForm" placeholder="药品剂型" clearable @change="getDataList">
         <el-option v-for="item in drugDosageList" :key="item.value" :label="item.label" :value="item.value" @change="getDataList">
         </el-option>
@@ -42,7 +43,7 @@
             <img :src="getImage(row.imageName)" style="width: auto; height: 55px; border:none;" >
           </div>
           <div slot="error" class="image-slot" v-else>
-            <img src="../../assets/img/logo/logo16.png" style="width: auto; height: 55px; border:none;" >
+            <img src="src/assets/img/logo/logo16.png" style="width: auto; height: 55px; border:none;" >
           </div>
         </template>
       </el-table-column>
@@ -52,7 +53,13 @@
       <el-table-column prop="inventory" header-align="center" align="center" label="库存量"/>
       <el-table-column prop="usageDosage" header-align="center" align="center" label="用法用量"/>
       <el-table-column prop="address" header-align="center" align="center" label="存放地址"/>
-      <el-table-column prop="lifeTime" header-align="center" align="center" label="保质期"/>
+      <el-table-column prop="lifeTime" header-align="center" align="center" label="保质期/月"/>
+      <el-table-column prop="status" header-align="center" align="center" label="状态">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.status === 0" size="small" type="warning">未入库</el-tag>
+          <el-tag v-else size="small">已入库</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column fixed="right" header-align="center" align="center" width="150" label="操作">
         <template slot-scope="scope">
           <el-button type="text" size="small" @click="edit(scope.row.drugId)">修改</el-button>
@@ -90,6 +97,7 @@ export default {
         starDate: '',
         endDate: ''
       },
+      drugNameList: [],
       drugDosageList: [],
       dataList: [],
       pageIndex: 1,
@@ -103,6 +111,7 @@ export default {
   created () {
     this.getDataList()
     this.getDrugDosageList()
+    this.getDrugNameList()
   },
   methods: {
     // 获取数据列表
@@ -145,6 +154,26 @@ export default {
               'value': data.list[i].drugDosageForm
             }
             this.drugDosageList.push(drugDosageMap)
+          }
+        } else {
+          this.$message({ message: data.msg })
+        }
+      })
+    },
+    getDrugNameList () {
+      this.$http({
+        url: this.$http.adornUrl('/sys/common/drugNameList'),
+        method: 'get',
+        params: this.$http.adornParams()
+      }).then(({data}) => {
+        if (data && data.code === 0) {
+          let drugDosageMap = {}
+          for (let i = 0; i < data.list.length; i++) {
+            drugDosageMap = {
+              'label': data.list[i].drugName,
+              'value': data.list[i].drugName
+            }
+            this.drugNameList.push(drugDosageMap)
           }
         } else {
           this.$message({ message: data.msg })

@@ -4,11 +4,8 @@
       <el-form-item>
         <el-input v-model="dataForm.drugId" placeholder="药品编号" clearable @change="getDataList"></el-input>
       </el-form-item>
-      <el-form-item>
-        <el-input v-model="dataForm.drugName" placeholder="药品名称" clearable @change="getDataList"></el-input>
-      </el-form-item>
-      <el-select v-model="dataForm.drugDosageForm" placeholder="药品剂型" clearable @change="getDataList">
-        <el-option v-for="item in drugDosageList" :key="item.value" :label="item.label" :value="item.value" @change="getDataList">
+      <el-select v-model="dataForm.drugName" placeholder="药品名称" clearable @change="getDataList">
+        <el-option v-for="item in drugNameList" :key="item.value" :label="item.label" :value="item.value" @change="getDataList">
         </el-option>
       </el-select>
       <el-form-item>
@@ -23,7 +20,7 @@
       </el-form-item>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
-        <el-button type="primary" @click="add()">新增药品</el-button>
+        <el-button type="primary" @click="add()">+ 新增药品入库</el-button>
         <el-button type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
       </el-form-item>
     </el-form>
@@ -36,26 +33,21 @@
       <el-table-column type="selection" header-align="center" align="center" width="50"></el-table-column>
       <el-table-column prop="drugId" header-align="center" align="center" width="80" label="药品编号"/>
       <el-table-column prop="drugName" header-align="center" align="center" label="药品名称"/>
-      <el-table-column prop="imageName" label="药品图片" align="center">
-        <template slot-scope="{ row }">
-          <div slot="error" class="image-slot" v-if="row.imageName !== null">
-            <img :src="getImage(row.imageName)" style="width: auto; height: 55px; border:none;" >
-          </div>
-          <div slot="error" class="image-slot" v-else>
-            <img src="../../assets/img/logo/logo16.png" style="width: auto; height: 55px; border:none;" >
-          </div>
+      <el-table-column prop="inboundTime" header-align="center" align="center" label="入库日期"/>
+      <el-table-column prop="inboundBatch" header-align="center" align="center" label="入库批次"/>
+      <el-table-column prop="vendor" header-align="center" align="center" label="供应商"/>
+      <el-table-column prop="inventory" header-align="center" align="center" label="数量"/>
+      <el-table-column prop="" header-align="center" align="center" width="100" label="状态">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.inventory < 10" size="small" type="danger">库存不足</el-tag>
+          <el-tag v-else-if="scope.row.inventory < 100" size="small" type="warning">库存较少</el-tag>
+          <el-tag v-else-if="scope.row.inventory > 100" size="small">库存充足</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="drugDosageForm" header-align="center" align="center" label="药品剂型"/>
-      <el-table-column prop="drugSize" header-align="center" align="center" label="药品规格"/>
-      <el-table-column prop="price" header-align="center" align="center" label="单价"/>
-      <el-table-column prop="inventory" header-align="center" align="center" label="库存量"/>
-      <el-table-column prop="usageDosage" header-align="center" align="center" label="用法用量"/>
-      <el-table-column prop="address" header-align="center" align="center" label="存放地址"/>
-      <el-table-column prop="lifeTime" header-align="center" align="center" label="保质期"/>
-      <el-table-column fixed="right" header-align="center" align="center" width="150" label="操作">
+      <el-table-column fixed="right" header-align="center" align="center" width="180" label="操作">
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="edit(scope.row.drugId)">修改</el-button>
+          <el-button type="text" size="small" @click="outBound(scope.row.drugId)">出库</el-button>
+          <el-button type="text" size="small" @click="edit(scope.row.drugId)">入库</el-button>
           <el-button type="text" size="small" @click="deleteHandle(scope.row.drugId)">删除</el-button>
         </template>
       </el-table-column>
@@ -75,7 +67,7 @@
 </template>
 
 <script>
-import infoTemp from './ypfl-temp'
+import infoTemp from './ypcrk-temp'
 export default {
   components: {
     infoTemp
@@ -85,12 +77,11 @@ export default {
       dataForm: {
         drugId: '',
         drugName: '',
-        drugDosageForm: '',
         selectDate: [],
         starDate: '',
         endDate: ''
       },
-      drugDosageList: [],
+      drugNameList: [],
       dataList: [],
       pageIndex: 1,
       pageSize: 10,
@@ -102,21 +93,20 @@ export default {
   },
   created () {
     this.getDataList()
-    this.getDrugDosageList()
+    this.getDrugNameList()
   },
   methods: {
     // 获取数据列表
     getDataList () {
       this.dataListLoading = true
       this.$http({
-        url: this.$http.adornUrl('/sys/ypfl/list'),
+        url: this.$http.adornUrl('/sys/ypcrk/list'),
         method: 'get',
         params: this.$http.adornParams({
           'page': this.pageIndex,
           'limit': this.pageSize,
           'drugId': this.dataForm.drugId,
           'drugName': this.dataForm.drugName,
-          'drugDosageForm': this.dataForm.drugDosageForm,
           'starDate': this.dataForm.starDate,
           'endDate': this.dataForm.endDate
         })
@@ -131,9 +121,9 @@ export default {
         this.dataListLoading = false
       })
     },
-    getDrugDosageList () {
+    getDrugNameList () {
       this.$http({
-        url: this.$http.adornUrl('/sys/common/drugDosageList'),
+        url: this.$http.adornUrl('/sys/common/drugNameList'),
         method: 'get',
         params: this.$http.adornParams()
       }).then(({data}) => {
@@ -141,18 +131,15 @@ export default {
           let drugDosageMap = {}
           for (let i = 0; i < data.list.length; i++) {
             drugDosageMap = {
-              'label': data.list[i].drugDosageForm,
-              'value': data.list[i].drugDosageForm
+              'label': data.list[i].drugName,
+              'value': data.list[i].drugName
             }
-            this.drugDosageList.push(drugDosageMap)
+            this.drugNameList.push(drugDosageMap)
           }
         } else {
           this.$message({ message: data.msg })
         }
       })
-    },
-    getImage (imageName) {
-      return `http://localhost:8080/sys/common/download?name=${imageName}`
     },
     dateSelect () {
       if (this.dataForm.selectDate === null) {
@@ -181,11 +168,15 @@ export default {
     // 新增
     add () {
       // 使用目标页面的方法
-      this.$refs.infoTemp.open(true, '')
+      this.$refs.infoTemp.open(true, '', '0')
+    },
+    // 出库
+    outBound (id) {
+      this.$refs.infoTemp.outBoundInfo(false, id, '2')
     },
     // 编辑
     edit (id) {
-      this.$refs.infoTemp.open(false, id)
+      this.$refs.infoTemp.open(false, id, '1')
     },
     // 删除
     deleteHandle (id) {
@@ -198,7 +189,7 @@ export default {
         type: 'warning'
       }).then(() => {
         this.$http({
-          url: this.$http.adornUrl('/sys/ypfl/delete'),
+          url: this.$http.adornUrl('/sys/ypcrk/delete'),
           method: 'post',
           data: this.$http.adornData(drugIds, false)
         }).then(({data}) => {
