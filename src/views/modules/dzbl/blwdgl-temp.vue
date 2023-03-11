@@ -53,10 +53,7 @@ export default {
         {
           type: 'input',
           field: 'fileId',
-          title: '病历编号',
-          effect: {
-            required: '请填写病历编号'
-          },
+          title: '文件编号',
           props: {
             disabled: true
           },
