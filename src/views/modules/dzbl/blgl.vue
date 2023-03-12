@@ -39,7 +39,7 @@
       style="width: 100%;">
       <el-table-column type="selection" header-align="center" align="center" width="50"></el-table-column>
       <el-table-column prop="eleRecordsId" header-align="center" align="center" label="病历编号"/>
-      <el-table-column prop="drugId" header-align="center" align="center" label="药物单(处方)编号"/>
+      <el-table-column prop="prescriptionId" header-align="center" align="center" label="药物单编号"/>
       <el-table-column prop="patientName" header-align="center" align="center" label="患者名"/>
       <el-table-column prop="deptName" header-align="center" align="center" label="治疗科室"/>
       <el-table-column prop="treatmentNum" header-align="center" align="center" label="第几次就诊">
@@ -52,6 +52,12 @@
         <template slot-scope="scope">
           <el-tag v-if="scope.row.isReferral === 0" size="small" type="danger">否</el-tag>
           <el-tag v-if="scope.row.isReferral === 1" size="small">是</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column prop="isGhBooking" header-align="center" align="center" label="挂号/预约">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.isGhBooking === 0" size="small" type="success">挂号</el-tag>
+          <el-tag v-if="scope.row.isGhBooking === 1" size="small" type="warning">预约</el-tag>
         </template>
       </el-table-column>
       <el-table-column fixed="right" header-align="center" align="center" width="150" label="操作">

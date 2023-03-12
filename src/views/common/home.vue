@@ -45,7 +45,7 @@
             src: require('@/assets/img/view/registered.jpg'),
             title: '爱口腔，爱健康',
             text: '快速挂号，预约医生，马上就诊！',
-            button: '预约挂号'
+            button: '挂号预约'
           },
           { id: 2,
             src: require('@/assets/img/view/department.jpg'),
@@ -63,13 +63,13 @@
             src: require('@/assets/img/view/medical_record.jpg'),
             title: '口腔医生是您口腔健康的好朋友',
             text: '电子病历是新医疗体系的重要载体，信息学和医学科学相结合，是传统医学迈向现代医学的重要标志。',
-            button: '查看病历'
+            button: '电子病历'
           },
           { id: 4,
             src: require('@/assets/img/view/pharmaceuticals.jpg'),
             title: '请带走您的健康口腔，留下我们共同的笑容',
             text: '一尘不染，才能永保健康；一丝不敬，方能精品纷呈，产品质量好，全靠工作质量保。',
-            button: '查询药物'
+            button: '药物信息'
           },
           { id: 5,
             src: require('@/assets/img/view/bill.jpg'),
@@ -88,14 +88,13 @@
     },
     methods: {
       enterPage (item) {
-        console.log(item)
         switch (item.id) {
-          case 1 :this.$router.replace({ name: '挂号管理' }); break
-          case 2 :this.$router.replace({ name: '科室管理' }); break
-          case 3 :this.$router.replace({ name: '病历管理' }); break
-          case 4 :this.$router.replace({ name: '药品分类' }); break
-          case 5 :this.$router.replace({ name: '缴费订单' }); break
-          case 6 :this.$router.replace({ name: '患者管理' }); break
+          case 1 :window.location.href = '/#/ghyy-gh'; break
+          case 2 :window.location.href = '/#/ksgl-ksgl'; break
+          case 3 :window.location.href = '/#/dzbl-blgl'; break
+          case 4 :window.location.href = '/#/ywgl-ypfl'; break
+          case 5 :window.location.href = '/#/jfgl-jfdd'; break
+          case 6 :window.location.href = '/#/rygl-hzgl'; break
         }
       }
     }

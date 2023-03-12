@@ -161,6 +161,7 @@ export default {
       })
     },
     getDrugNameList () {
+      this.drugNameList = []
       this.$http({
         url: this.$http.adornUrl('/sys/common/drugNameList'),
         method: 'get',
