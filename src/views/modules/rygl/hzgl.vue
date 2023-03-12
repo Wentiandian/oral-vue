@@ -2,10 +2,13 @@
   <div class="mod-user">
     <el-form :inline="true" :model="dataForm" @keyup.enter.native="getDataList()">
       <el-form-item>
-        <el-input v-model="dataForm.patientName" placeholder="患者名" clearable @change="getDataList"></el-input>
+        <el-input v-model="dataForm.patientId" placeholder="患者编号" clearable @change="getDataList"></el-input>
       </el-form-item>
-      <el-select v-model="dataForm.status" placeholder="是否过期">
-        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" @change="getDataList">
+      <el-form-item>
+        <el-input v-model="dataForm.patientName" placeholder="患者名称" clearable @change="getDataList"></el-input>
+      </el-form-item>
+      <el-select v-model="dataForm.status" placeholder="是否禁用" clearable @change="getDataList">
+        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"clearable @change="getDataList">
         </el-option>
       </el-select>
       <el-form-item>
@@ -30,27 +33,28 @@
       @selection-change="selectionChangeHandle"
       style="width: 100%;">
       <el-table-column type="selection" header-align="center" align="center" width="50"></el-table-column>
-      <el-table-column prop="ghId" header-align="center" align="center" width="80" label="挂号ID"/>
-      <el-table-column prop="patientEntity.patientName" header-align="center" align="center" label="患者名"/>
-      <el-table-column prop="patientEntity.sex" header-align="center" align="center" label="性别">
+      <el-table-column prop="patientId" header-align="center" align="center" width="80" label="患者编号"/>
+      <el-table-column prop="patientName" header-align="center" align="center" label="患者名称"/>
+      <el-table-column prop="mobile" header-align="center" align="center" label="手机号"/>
+      <el-table-column prop="email" header-align="center" align="center" label="邮箱"/>
+      <el-table-column prop="sex" header-align="center" align="center" label="性别">
         <template slot-scope="scope">
-          <span style="margin-right: 10px;">{{ scope.row.patientEntity.sex == '0' ? '女' : '男' }}</span>
+          <span style="margin-right: 10px;">{{ scope.row.sex === '0' ? '女' : '男' }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="patientEntity.age" header-align="center" align="center" label="年龄"/>
-      <el-table-column prop="patientEntity.mobile" header-align="center" align="center" label="手机号"/>
-      <el-table-column prop="ghTime" header-align="center" align="center" width="180" label="挂号时间"/>
-      <el-table-column prop="status" header-align="center" align="center" label="状态">
+      <el-table-column prop="age" header-align="center" align="center" label="年龄"/>
+      <el-table-column prop="createUserId" header-align="center" align="center" label="创建人编号"/>
+      <el-table-column prop="createTime" header-align="center" align="center" label="创建时间"/>
+      <el-table-column prop="status" header-align="center" align="center" label="是否禁用">
         <template slot-scope="scope">
-          <el-tag v-if="scope.row.status === 0" size="small" type="danger">已就诊</el-tag>
-          <el-tag v-if="scope.row.status === 2" size="small" type="info">已过期</el-tag>
-          <el-tag v-if="scope.row.status === 1" size="small">未就诊</el-tag>
+          <el-tag v-if="scope.row.status === 0" size="small" type="danger">已禁用</el-tag>
+          <el-tag v-else size="small">已启用</el-tag>
         </template>
       </el-table-column>
       <el-table-column fixed="right" header-align="center" align="center" width="150" label="操作">
         <template slot-scope="scope">
-          <el-button v-if="scope.row.status !== 0 && scope.row.status !== 2" type="text" size="small" @click="updateHandle(scope.row.ghId)">已就诊</el-button>
-          <el-button type="text" size="small" @click="deleteHandle(scope.row.ghId)">删除</el-button>
+          <el-button type="text" size="small" @click="edit(scope.row.patientId)">修改</el-button>
+          <el-button type="text" size="small" @click="deleteHandle(scope.row.patientId)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -64,24 +68,27 @@
       layout="total, sizes, prev, pager, next, jumper">
     </el-pagination>
     <!-- 弹窗, 新增 / 修改 -->
-    <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
+    <infoTemp ref="infoTemp" @closeHide="getDataList"></infoTemp>
   </div>
 </template>
 
 <script>
+import infoTemp from './hzgl-temp'
 export default {
   components: {
+    infoTemp
   },
   data () {
     return {
       dataForm: {
+        patientId: '',
         patientName: '',
+        status: '',
         selectDate: [],
         starDate: '',
-        endDate: '',
-        status: ''
+        endDate: ''
       },
-      options: [{value: '1', label: '未就诊'}, {value: '0', label: '已就诊'}, {value: '2', label: '已过期'}, {value: '', label: '全部状态'}],
+      options: [{value: '1', label: '已启用'}, {value: '0', label: '已禁用'}],
       dataList: [],
       pageIndex: 1,
       pageSize: 10,
@@ -99,15 +106,16 @@ export default {
     getDataList () {
       this.dataListLoading = true
       this.$http({
-        url: this.$http.adornUrl('/sys/gh/list'),
+        url: this.$http.adornUrl('/sys/hzgl/list'),
         method: 'get',
         params: this.$http.adornParams({
           'page': this.pageIndex,
           'limit': this.pageSize,
+          'patientId': this.dataForm.patientId,
           'patientName': this.dataForm.patientName,
+          'status': this.dataForm.status,
           'starDate': this.dataForm.starDate,
-          'endDate': this.dataForm.endDate,
-          'status': this.dataForm.status
+          'endDate': this.dataForm.endDate
         })
       }).then(({data}) => {
         if (data && data.code === 0) {
@@ -144,56 +152,24 @@ export default {
     selectionChangeHandle (val) {
       this.dataListSelections = val
     },
-    // 新增
-    addOrUpdateHandle (patientId, patientName) {
-      this.addOrUpdateVisible = true
-      this.$nextTick(() => {
-        this.$refs.addOrUpdate.init(patientId, patientName)
-      })
-    },
-    // 修改
-    updateHandle (ghId) {
-      this.$confirm(`确定该用户已就诊?`, '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        console.log(ghId)
-        this.$http({
-          url: this.$http.adornUrl('/sys/gh/status/' + ghId),
-          method: 'get',
-          data: this.$http.adornParams()
-        }).then(({data}) => {
-          if (data && data.code === 0) {
-            this.$message({
-              message: '操作成功',
-              type: 'success',
-              duration: 1500,
-              onClose: () => {
-                this.getDataList()
-              }
-            })
-          } else {
-            this.$message.error(data.msg)
-          }
-        })
-      }).catch(() => {})
-      this.getDataList()
+    // 编辑
+    edit (id) {
+      this.$refs.infoTemp.open(false, id)
     },
     // 删除
     deleteHandle (id) {
-      var ghIds = id ? [id] : this.dataListSelections.map(item => {
-        return item.ghId
+      var patientIds = id ? [id] : this.dataListSelections.map(item => {
+        return item.patientId
       })
-      this.$confirm(`确定对该挂号信息进行[${id ? '删除' : '批量删除'}]操作?`, '提示', {
+      this.$confirm(`确定对该科室信息进行[${id ? '删除' : '批量删除'}]操作?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
         this.$http({
-          url: this.$http.adornUrl('/sys/gh/delete'),
+          url: this.$http.adornUrl('/sys/hzgl/delete'),
           method: 'post',
-          data: this.$http.adornData(ghIds, false)
+          data: this.$http.adornData(patientIds, false)
         }).then(({data}) => {
           if (data && data.code === 0) {
             this.$message({
