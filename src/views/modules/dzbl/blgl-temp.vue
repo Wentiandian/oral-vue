@@ -58,7 +58,7 @@
 
     </div>
     <span slot="footer" class="dialog-footer">
-      <el-button type="primary" @click="dataFormSubmit()">确定</el-button>
+      <el-button type="primary" @click="dataFormSubmit()">提交</el-button>
       <el-button type="warning" plain aligen="center" @click="onReset">重置</el-button>
       <el-button @click="onClose">取消</el-button>
     </span>

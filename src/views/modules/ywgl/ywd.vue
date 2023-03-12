@@ -155,8 +155,8 @@ export default {
     },
     // 删除
     deleteHandle (id) {
-      var drugIds = id ? [id] : this.dataListSelections.map(item => {
-        return item.drugId
+      var prescriptionIds = id ? [id] : this.dataListSelections.map(item => {
+        return item.prescriptionId
       })
       this.$confirm(`确定对该科室信息进行[${id ? '删除' : '批量删除'}]操作?`, '提示', {
         confirmButtonText: '确定',
@@ -164,9 +164,9 @@ export default {
         type: 'warning'
       }).then(() => {
         this.$http({
-          url: this.$http.adornUrl('/sys/ypcrk/delete'),
+          url: this.$http.adornUrl('/sys/ywd/delete'),
           method: 'post',
-          data: this.$http.adornData(drugIds, false)
+          data: this.$http.adornData(prescriptionIds, false)
         }).then(({data}) => {
           if (data && data.code === 0) {
             this.$message({
