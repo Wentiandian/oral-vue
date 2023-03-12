@@ -2,15 +2,17 @@
   <div class="mod-user">
     <el-form :inline="true" :model="dataForm" @keyup.enter.native="getDataList()">
       <el-form-item>
-        <el-input v-model="dataForm.patientId" placeholder="患者编号" clearable @change="getDataList"></el-input>
+        <el-input v-model="dataForm.userId" placeholder="医护工作者编号" clearable @change="getDataList"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-input v-model="dataForm.patientName" placeholder="患者名称" clearable @change="getDataList"></el-input>
+        <el-input v-model="dataForm.name" placeholder="医护工作者名称" clearable @change="getDataList"></el-input>
       </el-form-item>
+      <el-form-item>
       <el-select v-model="dataForm.status" placeholder="是否禁用" clearable @change="getDataList">
         <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"clearable @change="getDataList">
         </el-option>
       </el-select>
+      </el-form-item>
       <el-form-item>
         <el-date-picker
           @change="dateSelect"
@@ -33,8 +35,10 @@
       @selection-change="selectionChangeHandle"
       style="width: 100%;">
       <el-table-column type="selection" header-align="center" align="center" width="50"></el-table-column>
-      <el-table-column prop="patientId" header-align="center" align="center" width="80" label="患者编号"/>
-      <el-table-column prop="patientName" header-align="center" align="center" label="患者名称"/>
+      <el-table-column prop="userId" header-align="center" align="center" width="80" label="医护工作者编号"/>
+      <el-table-column prop="username" header-align="center" align="center" label="用户名"/>
+      <el-table-column prop="name" header-align="center" align="center" label="医护工作者名称"/>
+      <el-table-column prop="roleName" header-align="center" align="center" label="角色"/>
       <el-table-column prop="mobile" header-align="center" align="center" label="手机号"/>
       <el-table-column prop="email" header-align="center" align="center" label="邮箱"/>
       <el-table-column prop="sex" header-align="center" align="center" label="性别">
@@ -42,7 +46,6 @@
           <span style="margin-right: 10px;">{{ scope.row.sex === '0' ? '女' : '男' }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="age" header-align="center" align="center" label="年龄"/>
       <el-table-column prop="createUserId" header-align="center" align="center" label="创建人编号"/>
       <el-table-column prop="createTime" header-align="center" align="center" label="创建时间"/>
       <el-table-column prop="status" header-align="center" align="center" label="是否禁用">
@@ -53,8 +56,7 @@
       </el-table-column>
       <el-table-column fixed="right" header-align="center" align="center" width="150" label="操作">
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="edit(scope.row.patientId)">修改</el-button>
-          <el-button type="text" size="small" @click="deleteHandle(scope.row.patientId)">删除</el-button>
+          <el-button type="text" size="small" @click="edit(scope.row.userId)">详细</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -81,8 +83,8 @@ export default {
   data () {
     return {
       dataForm: {
-        patientId: '',
-        patientName: '',
+        userId: '',
+        name: '',
         status: '',
         selectDate: [],
         starDate: '',
@@ -106,13 +108,13 @@ export default {
     getDataList () {
       this.dataListLoading = true
       this.$http({
-        url: this.$http.adornUrl('/sys/hzgl/list'),
+        url: this.$http.adornUrl('/sys/yhgl/list'),
         method: 'get',
         params: this.$http.adornParams({
           'page': this.pageIndex,
           'limit': this.pageSize,
-          'patientId': this.dataForm.patientId,
-          'patientName': this.dataForm.patientName,
+          'userId': this.dataForm.userId,
+          'name': this.dataForm.name,
           'status': this.dataForm.status,
           'starDate': this.dataForm.starDate,
           'endDate': this.dataForm.endDate
@@ -121,6 +123,20 @@ export default {
         if (data && data.code === 0) {
           this.dataList = data.list.records
           this.totalPage = data.list.pages
+          for (let i = 0; i < data.role.length; i++) {
+            let roleList = ''
+            if (data.role[i]['userId'] === this.dataList[i]['userId']) {
+              for (let j = 0; j < data.role[i]['roleEntityList'].length; j++) {
+                if (j === 0) {
+                  roleList = data.role[i]['roleEntityList'][j]['roleName']
+                } else {
+                  roleList = roleList + ',' + data.role[i]['roleEntityList'][j]['roleName']
+                }
+              }
+              this.dataList[i]['roleName'] = roleList
+            }
+          }
+          console.log(this.dataList)
         } else {
           this.dataList = []
           this.totalPage = 0
@@ -158,8 +174,8 @@ export default {
     },
     // 删除
     deleteHandle (id) {
-      var patientIds = id ? [id] : this.dataListSelections.map(item => {
-        return item.patientId
+      var userIds = id ? [id] : this.dataListSelections.map(item => {
+        return item.userId
       })
       this.$confirm(`确定对该科室信息进行[${id ? '删除' : '批量删除'}]操作?`, '提示', {
         confirmButtonText: '确定',
@@ -167,9 +183,9 @@ export default {
         type: 'warning'
       }).then(() => {
         this.$http({
-          url: this.$http.adornUrl('/sys/hzgl/delete'),
+          url: this.$http.adornUrl('/sys/yhgl/delete'),
           method: 'post',
-          data: this.$http.adornData(patientIds, false)
+          data: this.$http.adornData(userIds, false)
         }).then(({data}) => {
           if (data && data.code === 0) {
             this.$message({

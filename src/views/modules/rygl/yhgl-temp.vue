@@ -19,6 +19,8 @@
 </template>
 
 <script>
+import {multiple} from 'webpack-merge'
+
 export default {
   data () {
     return {
@@ -28,50 +30,78 @@ export default {
       value: {},
       initValue: {},
       titleName: '',
+      roleList: [],
       flag: true,
       rule: [
         {
           type: 'input',
-          field: 'patientId',
-          title: '患者编号',
-          effect: {
-            required: true
-          },
+          field: 'userId',
+          title: '医护工作者编号',
           props: {
             disabled: true
           },
           col: {
-            span: 8
+            span: 24
           }
         },
         {
           type: 'input',
-          field: 'patientName',
-          title: '患者名称',
-          effect: {
-            required: '请填写患者名称'
+          field: 'username',
+          title: '用户名',
+          props: {
+            disabled: true
           },
           col: {
-            span: 8
+            span: 24
+          }
+        },
+        {
+          type: 'input',
+          field: 'name',
+          title: '医护工作者名称',
+          props: {
+            disabled: true
+          },
+          col: {
+            span: 24
+          }
+        },
+        {
+          type: 'select',
+          field: 'roleIdList',
+          title: '角色',
+          options: [],
+          effect: {
+            required: true
+          },
+          props: {
+            multiple,
+            disabled: true
+          },
+          col: {
+            span: 24
           }
         },
         {
           type: 'input',
           field: 'mobile',
           title: '手机号',
-          effect: {
-            required: '请填写手机号'
+          props: {
+            disabled: true
           },
           col: {
-            span: 8
+            span: 24
           }
         },
         {
           type: 'input',
           field: 'email',
           title: '邮箱',
+          props: {
+            disabled: true
+          },
           col: {
-            span: 8
+            span: 24
           }
         },
         {
@@ -79,22 +109,14 @@ export default {
           field: 'sex',
           title: '性别',
           effect: {
-            required: '请选择性别'
+            required: true
           },
-          options: [{label: '♂男', value: 1}, {label: '♀女', value: 0}],
-          col: {
-            span: 8
-          }
-        },
-        {
-          type: 'input',
-          field: 'age',
-          title: '年龄',
-          effect: {
-            required: '请填写年龄'
+          options: [{label: '男', value: 1}, {label: '女', value: 0}],
+          props: {
+            disabled: true
           },
           col: {
-            span: 8
+            span: 12
           }
         },
         {
@@ -102,11 +124,14 @@ export default {
           field: 'status',
           title: '状态',
           effect: {
-            required: '请选择状态'
+            required: true
           },
           options: [{label: '启用', value: 1}, {label: '禁用', value: 0}],
+          props: {
+            disabled: true
+          },
           col: {
-            span: 8
+            span: 12
           }
         },
         {
@@ -117,7 +142,7 @@ export default {
             disabled: true
           },
           col: {
-            span: 8
+            span: 12
           }
         },
         {
@@ -138,22 +163,60 @@ export default {
       }
     }
   },
+  created () {
+    this.getRoleList()
+  },
+  watch: {
+    isCreate () {
+      if (this.isCreate) this.titleName = '新增'
+      else this.titleName = '编辑'
+    }
+  },
   methods: {
     open (isCreate, rowId) {
-      this.titleName = '编辑'
+      this.isCreate = isCreate
       this.rowId = rowId
       this.dialogVisible = true
       this.init()
     },
     init () {
+      if (!this.isCreate) {
+        this.$http({
+          url: this.$http.adornUrl(`/sys/yhgl/info/${this.rowId}`),
+          method: 'get',
+          params: this.$http.adornParams()
+        }).then(({data}) => {
+          if (data && data.code === 0) {
+            this.initValue = data.info
+            this.value = data.info
+            let roleList = []
+            for (let i = 0; i < data.roleList.length; i++) {
+              roleList.push(data.roleList[i].roleId)
+            }
+            this.value['roleIdList'] = roleList
+          } else {
+            this.$message({message: data.msg})
+          }
+        })
+      }
+    },
+    getRoleList () {
+      this.roleList = []
       this.$http({
-        url: this.$http.adornUrl(`/sys/hzgl/info/${this.rowId}`),
+        url: this.$http.adornUrl('/sys/common/roleList'),
         method: 'get',
         params: this.$http.adornParams()
       }).then(({data}) => {
         if (data && data.code === 0) {
-          this.initValue = data.info
-          this.value = data.info
+          let roleMap = {}
+          for (let i = 0; i < data.list.length; i++) {
+            roleMap = {
+              'label': data.list[i].roleName,
+              'value': data.list[i].roleId
+            }
+            this.roleList.push(roleMap)
+          }
+          this.rule[3]['options'] = this.roleList
         } else {
           this.$message({ message: data.msg })
         }
@@ -175,7 +238,7 @@ export default {
     // 表单提交
     dataFormSubmit () {
       this.$http({
-        url: this.$http.adornUrl(`/sys/hzgl/update`),
+        url: this.$http.adornUrl(`/sys/yhgl/update`),
         method: 'post',
         data: this.$http.adornData(this.value)
       }).then(({data}) => {

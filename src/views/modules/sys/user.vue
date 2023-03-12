@@ -21,6 +21,12 @@
       <el-table-column prop="username" header-align="center" align="center" label="用户名"></el-table-column>
       <el-table-column prop="email" header-align="center" align="center" label="邮箱"></el-table-column>
       <el-table-column prop="mobile" header-align="center" align="center" label="手机号"></el-table-column>
+      <el-table-column prop="flag" header-align="center" align="center" label="是否管理员">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.flag === '0'" size="small" type="danger">否</el-tag>
+          <el-tag v-else size="small">是</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column prop="status" header-align="center" align="center" label="状态">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.status === 0" size="small" type="danger">禁用</el-tag>

@@ -13,6 +13,9 @@
       <el-form-item label="确认密码" prop="comfirmPassword" :class="{ 'is-required': !dataForm.id }">
         <el-input v-model="dataForm.comfirmPassword" type="password" placeholder="确认密码"></el-input>
       </el-form-item>
+      <el-form-item label="名称" prop="name">
+        <el-input v-model="dataForm.name" placeholder="真实名称"></el-input>
+      </el-form-item>
       <el-form-item label="邮箱" prop="email">
         <el-input v-model="dataForm.email" placeholder="邮箱"></el-input>
       </el-form-item>
@@ -78,6 +81,7 @@
         dataForm: {
           id: 0,
           userName: '',
+          name: '',
           password: '',
           comfirmPassword: '',
           salt: '',
@@ -89,6 +93,9 @@
         dataRule: {
           userName: [
             { required: true, message: '用户名不能为空', trigger: 'blur' }
+          ],
+          name: [
+            { required: true, message: '名称不能为空', trigger: 'blur' }
           ],
           password: [
             { validator: validatePassword, trigger: 'blur' }
@@ -130,6 +137,7 @@
             }).then(({data}) => {
               if (data && data.code === 0) {
                 this.dataForm.userName = data.user.username
+                this.dataForm.name = data.user.name
                 this.dataForm.salt = data.user.salt
                 this.dataForm.email = data.user.email
                 this.dataForm.mobile = data.user.mobile
@@ -150,6 +158,7 @@
               data: this.$http.adornData({
                 'userId': this.dataForm.id || undefined,
                 'username': this.dataForm.userName,
+                'name': this.dataForm.name,
                 'password': this.dataForm.password,
                 'salt': this.dataForm.salt,
                 'email': this.dataForm.email,
