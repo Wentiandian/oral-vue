@@ -15,7 +15,83 @@
       <el-button type="warning" plain aligen="center" @click="onReset">重置</el-button>
       <el-button @click="onClose">取消</el-button>
     </span>
+    <h3>患者病历信息</h3>
+    <el-table
+      :data="tableData"
+      style="width: 100%">
+      <el-table-column type="expand">
+        <template slot-scope="props">
+          <el-form label-position="left" inline class="demo-table-expand">
+            <el-form-item label="患者名称">
+              <span>{{ props.row.patientName }}</span>
+            </el-form-item>
+            <el-form-item label="医生">
+              <span>{{ props.row.docName }}</span>
+            </el-form-item>
+            <el-form-item label="护士">
+              <span>{{ props.row.nurseName }}</span>
+            </el-form-item>
+            <el-form-item label="科室编号">
+              <span>{{ props.row.deptId }}</span>
+            </el-form-item>
+            <el-form-item label="治疗科室">
+              <span>{{ props.row.deptId }}</span>
+            </el-form-item>
+            <el-form-item label="诊断描述">
+              <span>{{ props.row.treatmentDescription }}</span>
+            </el-form-item>
+            <el-form-item label="治疗方案">
+              <span>{{ props.row.treatmentMethod }}</span>
+            </el-form-item>
+            <el-form-item label="治疗过程">
+              <span>{{ props.row.treatmentDuring }}</span>
+            </el-form-item>
+            <el-form-item label="医嘱">
+              <span>{{ props.row.docOrders }}</span>
+            </el-form-item>
+            <el-form-item label="药物单编号">
+              <span>{{ props.row.prescriptionId }}</span>
+            </el-form-item>
+            <el-form-item label="医院名称">
+              <span>{{ props.row.prescriptionEntity.hospital }}</span>
+            </el-form-item>
+            <el-form-item label="开处方时间">
+              <span>{{ props.row.prescriptionEntity.prescriptionTime }}</span>
+            </el-form-item>
+            <el-form-item label="使用方法">
+              <span>{{ props.row.prescriptionEntity.useMethod }}</span>
+            </el-form-item>
+            <el-form-item label="药剂师">
+              <span>{{ props.row.prescriptionEntity.pharmacist }}</span>
+            </el-form-item>
+            <el-form-item>
+              <h3>开药情况</h3>
+            </el-form-item>
+            <el-form-item>
+              <span></span>
+            </el-form-item>
+            <el-form-item label="药品"/>
+            <el-form-item label="数量"/>
+            <el-form-item>
+              <div v-for="item in props.row.drugPreEntityList">
+                <span>{{ item.drugName }}</span>
+              </div>
+            </el-form-item>
+            <el-form-item>
+              <div v-for="item in props.row.drugPreEntityList">
+                <span>{{ item.drugNum }}</span>
+              </div>
+            </el-form-item>
+
+          </el-form>
+        </template>
+      </el-table-column>
+      <el-table-column label="病历编号" prop="eleRecordsId"></el-table-column>
+      <el-table-column label="第几次就诊" prop="treatmentNum"></el-table-column>
+      <el-table-column label="就诊时间" prop="treatmentTime"></el-table-column>
+    </el-table>
   </el-dialog>
+
 </template>
 
 <script>
@@ -27,8 +103,10 @@ export default {
       rowId: '',
       value: {},
       initValue: {},
+      isCreate: null,
       titleName: '',
       flag: true,
+      tableData: [],
       rule: [
         {
           type: 'input',
@@ -140,9 +218,10 @@ export default {
   },
   methods: {
     open (isCreate, rowId) {
-      this.titleName = '编辑'
-      this.rowId = rowId
+      this.isCreate = isCreate
+      this.titleName = '患者信息'
       this.dialogVisible = true
+      this.rowId = rowId
       this.init()
     },
     init () {
@@ -154,6 +233,7 @@ export default {
         if (data && data.code === 0) {
           this.initValue = data.info
           this.value = data.info
+          this.tableData = data.list
         } else {
           this.$message({ message: data.msg })
         }
@@ -198,3 +278,17 @@ export default {
   }
 }
 </script>
+<style>
+.demo-table-expand {
+  font-size: 0;
+}
+.demo-table-expand label {
+  width: 90px;
+  color: #99a9bf;
+}
+.demo-table-expand .el-form-item {
+  margin-right: 0;
+  margin-bottom: 0;
+  width: 50%;
+}
+</style>

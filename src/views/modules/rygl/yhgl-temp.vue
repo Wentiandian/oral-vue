@@ -29,6 +29,7 @@ export default {
       rowId: '',
       value: {},
       initValue: {},
+      isCreate: null,
       titleName: '',
       roleList: [],
       flag: true,
