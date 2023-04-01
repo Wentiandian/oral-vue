@@ -112,7 +112,7 @@ export default {
           effect: {
             required: true
           },
-          options: [{label: '男', value: 1}, {label: '女', value: 0}],
+          options: [{label: '男', value: '1'}, {label: '女', value: '0'}],
           props: {
             disabled: true
           },

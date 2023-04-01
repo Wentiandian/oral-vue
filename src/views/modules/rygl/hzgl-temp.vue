@@ -159,7 +159,7 @@ export default {
           effect: {
             required: '请选择性别'
           },
-          options: [{label: '♂男', value: 1}, {label: '♀女', value: 0}],
+          options: [{label: '男', value: '1'}, {label: '女', value: '0'}],
           col: {
             span: 8
           }
