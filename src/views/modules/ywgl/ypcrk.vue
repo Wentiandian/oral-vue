@@ -35,6 +35,8 @@
       <el-table-column prop="drugName" header-align="center" align="center" label="药品名称"/>
       <el-table-column prop="inboundTime" header-align="center" align="center" label="入库日期"/>
       <el-table-column prop="inboundBatch" header-align="center" align="center" label="入库批次"/>
+      <el-table-column prop="outboundTime" header-align="center" align="center" label="出库日期"/>
+      <el-table-column prop="outboundBatch" header-align="center" align="center" label="出库批次"/>
       <el-table-column prop="vendor" header-align="center" align="center" label="供应商"/>
       <el-table-column prop="inventory" header-align="center" align="center" label="数量"/>
       <el-table-column prop="" header-align="center" align="center" width="100" label="状态">

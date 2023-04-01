@@ -446,6 +446,7 @@ export default {
       this.initValue1 = {}
       this.deptList = []
       this.patientList = []
+      this.drugPreList = []
       this.dialogVisible = false
       this.$refs.Upload.onCloseAndSubmit()
       this.fApi.resetFields()
@@ -475,6 +476,7 @@ export default {
           this.value1 = {}
           this.initValue1 = {}
           this.patientList = []
+          this.drugPreList = []
           this.dialogVisible = false
           this.$refs.Upload.onCloseAndSubmit()
           this.fApi.resetFields()
