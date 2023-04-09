@@ -132,7 +132,7 @@ export default {
       }).then(({data}) => {
         if (data && data.code === 0) {
           this.dataList = data.list.records
-          this.totalPage = data.list.pages
+          this.totalPage = data.list.total
         } else {
           this.dataList = []
           this.totalPage = 0

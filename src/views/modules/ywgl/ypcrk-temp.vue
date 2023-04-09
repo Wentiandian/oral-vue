@@ -112,6 +112,10 @@ export default {
           effect: {
             required: '请选择入库时间'
           },
+          props: {
+            'type': 'datetime',
+            'format': 'yyyy-MM-dd HH:mm:ss'
+          },
           col: {
             span: 12
           }
@@ -177,6 +181,10 @@ export default {
           title: '出库时间',
           effect: {
             required: '请选择出库时间'
+          },
+          props: {
+            'type': 'datetime',
+            'format': 'yyyy-MM-dd HH:mm:ss'
           },
           col: {
             span: 12

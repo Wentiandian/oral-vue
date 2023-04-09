@@ -129,7 +129,7 @@ export default {
       }).then(({data}) => {
         if (data && data.code === 0) {
           this.dataList = data.list
-          this.totalPage = data.list.length / this.pageSize
+          this.totalPage = data.list.length / this.pageSize * 10
         } else {
           this.dataList = []
           this.totalPage = 0
